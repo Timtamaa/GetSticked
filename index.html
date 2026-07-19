@@ -10,7 +10,7 @@
   <div class="app-wrapper">
     <header class="app-header">
       <h1>Kalkulator Stick Up</h1>
-      <p>Hitung panjang pipa tersisa (S) dari jumlah pipa 3m dan 1.5m, kedalaman (D), dan panjang barrel tetap 2.60 m.</p>
+      <p>Hitung panjang pipa tersisa (S) dari jumlah pipa 3m dan 1.5m, kedalaman (D), dan panjang barrel.</p>
     </header>
 
     <main class="card">
@@ -19,14 +19,14 @@
         <div class="form-group">
           <label for="rodCount3">n₁ &mdash; Jumlah pipa 3 m</label>
           <input type="number" id="rodCount3" step="1" min="0" placeholder="Contoh: 5">
-          <small>Masukkan jumlah batang pipa 3 meter.</small>
+          <small>Masukkan jumlah batang pipa 3 m yang sudah masuk.</small>
         </div>
 
         <!-- n2 = jumlah pipa 1.5m -->
         <div class="form-group">
           <label for="rodCount15">n₂ &mdash; Jumlah pipa 1.5 m</label>
           <input type="number" id="rodCount15" step="1" min="0" placeholder="Contoh: 3">
-          <small>Masukkan jumlah batang pipa 1.5 meter.</small>
+          <small>Masukkan jumlah batang pipa 1.5 m yang sudah masuk.</small>
         </div>
 
         <!-- D = input manual -->
@@ -46,13 +46,13 @@
 
       <section class="note">
         <h3>Rumus yang digunakan</h3>
-        <p>S = (n₁ × 3 + n₂ × 1.5) − D + 2.60</p>
+        <p>S = (n₁ × 3.0 + n₂ × 1.5) − D + 2.60</p>
         <p>
-          S = Stick up (panjang pipa di atas permukaan termasuk barrel) <br>
+          S = Stick up (panjang pipa di atas permukaan) <br>
           n₁ = jumlah pipa 3 m <br>
           n₂ = jumlah pipa 1.5 m <br>
-          D = kedalaman aktual (input manual) <br>
-          2.60 = panjang barrel tetap (m)
+          D = kedalaman aktual (input) <br>
+          Panjang Barrel = 2.60 m (konstan)
         </p>
         <!-- Tidak ada kalimat batas maksimum -->
       </section>
