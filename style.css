@@ -168,3 +168,12 @@ small {
 .note p + p {
   margin-top: 4px;
 }
+
+.warning-text {
+  color: #991b1b;
+  background-color: #fee2e2;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border-left: 4px solid #dc2626;
+  font-weight: 500;
+}
