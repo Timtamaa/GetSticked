@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stick-Up Gauge — Kalkulator Pengeboran Nikel Laterit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="rig-frame">
+
+  <header class="panel-header">
+    <div class="header-left">
+      <div class="rivet"></div>
+      <div>
+        <p class="eyebrow">FIELD INSTRUMENT — MINE GEOLOGY</p>
+        <h1>STICK-UP GAUGE</h1>
+        <p class="subtitle">Kalkulator jumlah pipa &amp; nilai stick up pengeboran nikel laterit</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-lamp" id="statusLamp"></div>
+      <span id="statusText">MENUNGGU INPUT</span>
+    </div>
+  </header>
+
+  <main class="dashboard">
+
+    <!-- INPUT COLUMN -->
+    <section class="panel input-panel">
+      <h2 class="panel-title"><span class="tag">01</span> Kedalaman Target</h2>
+
+      <div class="depth-input-group">
+        <label for="targetDepth">Kedalaman rencana (TD)</label>
+        <div class="depth-field">
+          <input type="number" id="targetDepth" inputmode="decimal" placeholder="0.00" step="0.05" min="0">
+          <span class="unit">meter</span>
+        </div>
+      </div>
+
+      <button id="calcBtn" class="calc-btn">
+        <span>HITUNG STICK UP</span>
+      </button>
+
+      <div class="advanced-toggle">
+        <button id="advToggle" type="button" class="link-btn">Pengaturan lanjutan ⌄</button>
+      </div>
+
+      <div class="advanced-panel" id="advancedPanel">
+        <div class="adv-row">
+          <label for="cbLength">Panjang Core Barrel</label>
+          <div class="adv-field">
+            <input type="number" id="cbLength" value="2.6" step="0.1" min="0.1">
+            <span class="unit-sm">m</span>
+          </div>
+        </div>
+        <div class="adv-row">
+          <label for="pipeA">Panjang pipa — tipe A</label>
+          <div class="adv-field">
+            <input type="number" id="pipeA" value="3.0" step="0.1" min="0.1">
+            <span class="unit-sm">m</span>
+          </div>
+        </div>
+        <div class="adv-row">
+          <label for="pipeB">Panjang pipa — tipe B</label>
+          <div class="adv-field">
+            <input type="number" id="pipeB" value="1.5" step="0.1" min="0.1">
+            <span class="unit-sm">m</span>
+          </div>
+        </div>
+        <p class="adv-note">Nilai Cut diasumsikan 0 (recovery core sempurna).</p>
+      </div>
+
+      <div class="error-box" id="errorBox" hidden></div>
+    </section>
+
+    <!-- READOUT COLUMN -->
+    <section class="panel readout-panel">
+      <h2 class="panel-title"><span class="tag">02</span> Hasil Perhitungan</h2>
+
+      <div class="readout-grid">
+        <div class="readout-card highlight">
+          <p class="readout-label">Nilai Stick Up</p>
+          <p class="readout-value" id="outStickUp">—</p>
+          <p class="readout-unit">meter</p>
+        </div>
+        <div class="readout-card">
+          <p class="readout-label">Total Pipa Terpasang</p>
+          <p class="readout-value" id="outPipeCount">—</p>
+          <p class="readout-unit">batang</p>
+        </div>
+      </div>
+
+      <div class="breakdown" id="breakdown">
+        <div class="breakdown-row">
+          <span class="dot dot-a"></span>
+          <span class="bd-label">Pipa tipe A (<span id="pipeALenLabel">3.0</span> m)</span>
+          <span class="bd-value" id="outPipeA">—</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="dot dot-b"></span>
+          <span class="bd-label">Pipa tipe B (<span id="pipeBLenLabel">1.5</span> m)</span>
+          <span class="bd-value" id="outPipeB">—</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="dot dot-cb"></span>
+          <span class="bd-label">Core Barrel</span>
+          <span class="bd-value" id="outCB">—</span>
+        </div>
+        <div class="breakdown-row total-row">
+          <span class="bd-label">Total panjang string</span>
+          <span class="bd-value" id="outTotalString">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAGRAM COLUMN -->
+    <section class="panel diagram-panel">
+      <h2 class="panel-title"><span class="tag">03</span> Ilustrasi Rangkaian</h2>
+      <div class="diagram-wrap">
+        <svg id="stringDiagram" viewBox="0 0 220 460" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <p class="diagram-note">Ilustrasi tidak dalam skala penuh — segmen tipis diperbesar agar tetap terbaca.</p>
+    </section>
+
+  </main>
+
+  <!-- FORMULA SHEET -->
+  <section class="panel formula-panel">
+    <h2 class="panel-title"><span class="tag">REF</span> Rumus yang Digunakan</h2>
+    <div class="formula-grid">
+      <div class="formula-card">
+        <p class="formula-caption">Kedalaman total (Cut diasumsikan 0)</p>
+        <p class="formula-eq">TD = Panjang&nbsp;Pipa + CB − Stick&nbsp;Up</p>
+      </div>
+      <div class="formula-card">
+        <p class="formula-caption">Stick up diturunkan dari TD</p>
+        <p class="formula-eq">Stick&nbsp;Up = Panjang&nbsp;Pipa + CB − TD</p>
+      </div>
+      <div class="formula-card">
+        <p class="formula-caption">Panjang pipa dibutuhkan</p>
+        <p class="formula-eq">Pipa&nbsp;Perlu = TD − CB</p>
+      </div>
+    </div>
+    <p class="formula-footnote">Kombinasi pipa dipilih dengan memaksimalkan pipa tipe A (batang lebih panjang) lebih dulu, sisanya diisi pipa tipe B, agar jumlah sambungan (joint) seminimal mungkin dan stick up sekecil mungkin.</p>
+  </section>
+
+  <footer class="panel-footer">
+    <span>STICK-UP GAUGE · ALAT BANTU SUPERVISI PENGEBORAN</span>
+    <span>Cek ulang stick up aktual di lapangan tiap akhir run</span>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
