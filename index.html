@@ -1,19 +1,22 @@
 <div class="container">
-  <h2>Hitung Jumlah Pipa dari MD & Stick Up</h2>
+  <h2>Kalkulator Stick Up</h2>
 
-  <label>Tipe pipa:</label>
-  <select id="pipeType2">
+  <!-- 1. Pemilihan jenis pipa -->
+  <label>Jenis pipa (L):</label>
+  <select id="pipeType">
     <option value="3">3.0 m</option>
     <option value="1.5">1.5 m</option>
   </select>
 
-  <label>Kedalaman bor (MD, m):</label>
-  <input type="number" id="md2" step="0.01" value="27">
+  <!-- 2. Input jumlah pipa dan kedalaman -->
+  <label>Jumlah pipa (n):</label>
+  <input type="number" id="rodCount" step="1" min="0" value="0">
 
-  <label>Stick up terukur (m):</label>
-  <input type="number" id="stickUpMeasured" step="0.01" value="3">
+  <label>Kedalaman aktual (D, m):</label>
+  <input type="number" id="depth" step="0.01" min="0" value="0">
 
-  <button onclick="calculateRodCount()">Hitung Jumlah Pipa</button>
+  <button onclick="calculateStickUp()">Hitung Stick Up</button>
 
-  <p id="rodCountResult"></p>
+  <!-- 3. Hasil stick up -->
+  <p id="stickUpResult"></p>
 </div>
