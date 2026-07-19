@@ -10,26 +10,23 @@
   <div class="app-wrapper">
     <header class="app-header">
       <h1>Kalkulator Stick Up</h1>
-      <p>Hitung panjang pipa tersisa (S) dari tipe pipa (L), jumlah pipa (n), dan kedalaman (D).</p>
+      <p>Hitung panjang pipa tersisa (S) dari jumlah pipa 3m dan 1.5m, kedalaman (D), dan panjang barrel tetap 2.60 m.</p>
     </header>
 
     <main class="card">
       <div class="form-grid">
-        <!-- L = pilihan tipe pipa -->
+        <!-- n1 = jumlah pipa 3m -->
         <div class="form-group">
-          <label for="pipeType">L &mdash; Jenis pipa (m)</label>
-          <select id="pipeType">
-            <option value="3">3.0 m</option>
-            <option value="1.5">1.5 m</option>
-          </select>
-          <small>Nilai L diambil otomatis dari pilihan ini.</small>
+          <label for="rodCount3">n₁ &mdash; Jumlah pipa 3 m</label>
+          <input type="number" id="rodCount3" step="1" min="0" placeholder="Contoh: 5">
+          <small>Masukkan jumlah batang pipa 3 meter.</small>
         </div>
 
-        <!-- n = input manual -->
+        <!-- n2 = jumlah pipa 1.5m -->
         <div class="form-group">
-          <label for="rodCount">n &mdash; Jumlah pipa</label>
-          <input type="number" id="rodCount" step="1" min="0" placeholder="Contoh: 10">
-          <small>Masukkan jumlah batang pipa yang sudah masuk ke lubang bor.</small>
+          <label for="rodCount15">n₂ &mdash; Jumlah pipa 1.5 m</label>
+          <input type="number" id="rodCount15" step="1" min="0" placeholder="Contoh: 3">
+          <small>Masukkan jumlah batang pipa 1.5 meter.</small>
         </div>
 
         <!-- D = input manual -->
@@ -49,14 +46,15 @@
 
       <section class="note">
         <h3>Rumus yang digunakan</h3>
-        <p>S = (n × L) − D</p>
+        <p>S = (n₁ × 3 + n₂ × 1.5) − D + 2.60</p>
         <p>
-          S = Stick up (panjang pipa di atas permukaan) <br>
-          n = jumlah pipa di lubang (input manual) <br>
-          L = panjang pipa per batang (3 m atau 1,5 m) <br>
-          D = kedalaman aktual (input manual)
+          S = Stick up (panjang pipa di atas permukaan termasuk barrel) <br>
+          n₁ = jumlah pipa 3 m <br>
+          n₂ = jumlah pipa 1.5 m <br>
+          D = kedalaman aktual (input manual) <br>
+          2.60 = panjang barrel tetap (m)
         </p>
-        <!-- Kalimat batas maksimum 260 dihapus -->
+        <!-- Tidak ada kalimat batas maksimum -->
       </section>
     </main>
   </div>
