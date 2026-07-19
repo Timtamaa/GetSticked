@@ -1,22 +1,65 @@
-<div class="container">
-  <h2>Kalkulator Stick Up</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kalkulator Stick Up - Nickel Drilling</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <header class="app-header">
+      <h1>Kalkulator Stick Up</h1>
+      <p>Hitung panjang pipa tersisa (S) dari tipe pipa (L), jumlah pipa (n), dan kedalaman (D).</p>
+    </header>
 
-  <!-- 1. Pemilihan jenis pipa -->
-  <label>Jenis pipa (L):</label>
-  <select id="pipeType">
-    <option value="3">3.0 m</option>
-    <option value="1.5">1.5 m</option>
-  </select>
+    <main class="card">
+      <div class="form-grid">
+        <!-- L = pilihan tipe pipa -->
+        <div class="form-group">
+          <label for="pipeType">L &mdash; Jenis pipa (m)</label>
+          <select id="pipeType">
+            <option value="3">3.0 m</option>
+            <option value="1.5">1.5 m</option>
+          </select>
+          <small>Nilai L diambil otomatis dari pilihan ini.</small>
+        </div>
 
-  <!-- 2. Input jumlah pipa dan kedalaman -->
-  <label>Jumlah pipa (n):</label>
-  <input type="number" id="rodCount" step="1" min="0" value="0">
+        <!-- n = input manual -->
+        <div class="form-group">
+          <label for="rodCount">n &mdash; Jumlah pipa</label>
+          <input type="number" id="rodCount" step="1" min="0" placeholder="Contoh: 10">
+          <small>Masukkan jumlah batang pipa yang sudah masuk ke lubang bor.</small>
+        </div>
 
-  <label>Kedalaman aktual (D, m):</label>
-  <input type="number" id="depth" step="0.01" min="0" value="0">
+        <!-- D = input manual -->
+        <div class="form-group">
+          <label for="depth">D &mdash; Kedalaman aktual (m)</label>
+          <input type="number" id="depth" step="0.01" min="0" placeholder="Contoh: 27.5">
+          <small>Kedalaman aktual lubang bor dari collar / referensi.</small>
+        </div>
+      </div>
 
-  <button onclick="calculateStickUp()">Hitung Stick Up</button>
+      <button class="primary-btn" onclick="calculateStickUp()">Hitung S</button>
 
-  <!-- 3. Hasil stick up -->
-  <p id="stickUpResult"></p>
-</div>
+      <section class="result-card" id="resultSection">
+        <h2>Hasil</h2>
+        <p id="stickUpResult" class="result-text">Isi parameter di atas lalu klik "Hitung S".</p>
+      </section>
+
+      <section class="note">
+        <h3>Rumus yang digunakan</h3>
+        <p>S = (n × L) − D</p>
+        <p>
+          S = Stick up (panjang pipa di atas permukaan) <br>
+          n = jumlah pipa di lubang (input manual) <br>
+          L = panjang pipa per batang (3 m atau 1,5 m) <br>
+          D = kedalaman aktual (input manual)
+        </p>
+        <p>Nilai S dibatasi maksimum 260.</p>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
