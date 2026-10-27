@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stick-Up Gauge — Simulasi Per-Meter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="rig-frame">
+
+  <nav class="app-nav" aria-label="Halaman aplikasi">
+    <a href="#stickup" class="nav-link" data-page="stickup">Stick Up</a>
+    <a href="#recovery" class="nav-link" data-page="recovery">Recovery Sample</a>
+  </nav>
+
+  <!-- ===== HALAMAN 1: STICK UP ===== -->
+  <div class="app-page" id="page-stickup">
+
+  <header class="panel-header">
+      <div class="header-left">
+        <div class="rivet"></div>
+        <div>
+          <p class="eyebrow">FIELD INSTRUMENT — MINE GEOLOGY</p>
+          <h1>STICK-UP GAUGE</h1>
+          <p class="subtitle">Simulasi stick up per-meter pengeboran nikel laterit</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="status-lamp" id="statusLamp"></div>
+        <span id="statusText">MENUNGGU INPUT</span>
+      </div>
+    </header>
+
+    <main class="dashboard">
+
+      <!-- INPUT COLUMN -->
+      <section class="panel input-panel">
+        <h2 class="panel-title"><span class="tag">01</span> Kedalaman Target</h2>
+
+        <div class="depth-input-group">
+          <label for="targetDepth">Kedalaman rencana (TD) — kelipatan interval 1 m</label>
+          <div class="depth-field">
+            <input type="number" id="targetDepth" inputmode="decimal" placeholder="0" step="1" min="1">
+            <span class="unit">meter</span>
+          </div>
+        </div>
+
+        <button id="calcBtn" class="calc-btn">
+          <span>SIMULASIKAN STICK UP</span>
+        </button>
+
+        <div class="advanced-toggle">
+          <button id="advToggle" type="button" class="link-btn">Pengaturan lanjutan ⌄</button>
+        </div>
+
+        <div class="advanced-panel" id="advancedPanel">
+          <div class="adv-row">
+            <label for="cbLength">Panjang Core Barrel</label>
+            <div class="adv-field">
+              <input type="number" id="cbLength" value="2.6" step="0.1" min="0.1">
+              <span class="unit-sm">m</span>
+            </div>
+          </div>
+          <div class="adv-row">
+            <label for="interval">Interval pengeboran</label>
+            <div class="adv-field">
+              <input type="number" id="interval" value="1" step="0.1" min="0.1">
+              <span class="unit-sm">m</span>
+            </div>
+          </div>
+          <div class="adv-row">
+            <label for="safeMin">Batas aman minimum</label>
+            <div class="adv-field">
+              <input type="number" id="safeMin" value="0.6" step="0.1" min="0">
+              <span class="unit-sm">m</span>
+            </div>
+          </div>
+          <div class="adv-row">
+            <label for="supportLen">Panjang pipa support</label>
+            <div class="adv-field">
+              <input type="number" id="supportLen" value="1.5" step="0.1" min="0.1">
+              <span class="unit-sm">m</span>
+            </div>
+          </div>
+          <div class="adv-row">
+            <label for="standardLen">Panjang pipa standar</label>
+            <div class="adv-field">
+              <input type="number" id="standardLen" value="3.0" step="0.1" min="0.1">
+              <span class="unit-sm">m</span>
+            </div>
+          </div>
+          <div class="adv-row">
+            <label for="maxSupport">Maks. pemakaian pipa support</label>
+            <div class="adv-field">
+              <input type="number" id="maxSupport" value="2" step="1" min="1">
+              <span class="unit-sm">×</span>
+            </div>
+          </div>
+          <p class="adv-note">Setelah pipa support terpakai sebanyak batas maksimum, keduanya ditukar dengan 1 pipa standar (panjang setara) dan seterusnya hanya pipa standar yang dipakai.</p>
+        </div>
+
+        <div class="error-box" id="errorBox" hidden></div>
+      </section>
+
+      <!-- READOUT COLUMN -->
+      <section class="panel readout-panel">
+        <h2 class="panel-title"><span class="tag">02</span> Hasil Simulasi</h2>
+
+        <div class="readout-grid">
+          <div class="readout-card highlight">
+            <p class="readout-label">Stick Up Akhir</p>
+            <p class="readout-value" id="outStickUp">—</p>
+            <p class="readout-unit">meter, pada meteran ke-<span id="outLastMeter">—</span></p>
+          </div>
+          <div class="readout-card">
+            <p class="readout-label">Total Pipa (+ Barrel)</p>
+            <p class="readout-value" id="outPipeCount">—</p>
+            <p class="readout-unit">batang</p>
+          </div>
+        </div>
+
+        <div class="breakdown" id="breakdown">
+          <div class="breakdown-row">
+            <span class="dot dot-b"></span>
+            <span class="bd-label">Pipa support aktif (belum ditukar)</span>
+            <span class="bd-value" id="outActiveSupport">—</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="dot dot-a"></span>
+            <span class="bd-label">Pipa standar (langsung + hasil tukar)</span>
+            <span class="bd-value" id="outStandard">—</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="dot dot-cb"></span>
+            <span class="bd-label">Core Barrel</span>
+            <span class="bd-value" id="outCB">—</span>
+          </div>
+          <div class="breakdown-row total-row">
+            <span class="bd-label">Total pipa support terpakai (seumur run)</span>
+            <span class="bd-value" id="outSupportUsedTotal">—</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABLE COLUMN -->
+      <section class="panel table-panel">
+        <h2 class="panel-title"><span class="tag">03</span> Progres Per-Meter</h2>
+        <div class="table-wrap">
+          <table id="progressTable">
+            <thead>
+              <tr><th>Meteran</th><th>Stick Up</th><th>Kejadian</th></tr>
+            </thead>
+            <tbody id="progressBody">
+              <tr><td colspan="3" class="empty-row">Isi kedalaman untuk melihat progres.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FORMULA SHEET -->
+    <section class="panel formula-panel">
+      <h2 class="panel-title"><span class="tag">REF</span> Rumus yang Digunakan</h2>
+      <div class="formula-grid">
+        <div class="formula-card">
+          <p class="formula-caption">Setiap kemajuan interval (per-meter)</p>
+          <p class="formula-eq">Stick&nbsp;Up = Stick&nbsp;Up&nbsp;sebelumnya − Interval</p>
+        </div>
+        <div class="formula-card">
+          <p class="formula-caption">Jika hasil akan melewati batas aman</p>
+          <p class="formula-eq">Tambah&nbsp;pipa&nbsp;dulu, baru dikurangi interval</p>
+        </div>
+        <div class="formula-card">
+          <p class="formula-caption">Bentuk umum tiap kejadian</p>
+          <p class="formula-eq">SU = Total&nbsp;Pipa&nbsp;Masuk + Barrel − Total&nbsp;Kedalaman</p>
+        </div>
+      </div>
+      <p class="formula-footnote">Setiap kali kemajuan 1 interval akan membuat stick up jatuh di bawah batas aman (default 0,60 m), sistem menambah pipa sebelum melanjutkan pengurangan. Dua penambahan pertama memakai pipa support (1,5 m); begitu pemakaian pipa support mencapai batasnya, kedua pipa support tersebut ditukar dengan 1 pipa standar (3 m, panjang setara) dan seterusnya penambahan berikutnya selalu memakai pipa standar. Core Barrel selalu dihitung sebagai 1 komponen dalam total pipa yang digunakan.</p>
+    </section>
+
+    <footer class="panel-footer">
+      <span>STICK-UP GAUGE · ALAT BANTU SUPERVISI PENGEBORAN</span>
+      <span>Cek ulang stick up aktual di lapangan tiap akhir run</span>
+    </footer>
+
+  </div>
+
+  <!-- ===== HALAMAN 2: RECOVERY SAMPLE ===== -->
+  <div class="app-page" id="page-recovery" hidden>
+
+  <header class="panel-header">
+      <div class="header-left">
+        <div class="rivet"></div>
+        <div>
+          <p class="eyebrow">FIELD INSTRUMENT — MINE GEOLOGY</p>
+          <h1>RECOVERY SAMPLE</h1>
+          <p class="subtitle">Masukkan panjang sampel aktual per meteran, recovery dihitung otomatis</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="status-lamp" id="recStatusLamp"></div>
+        <span id="recStatusText">MENUNGGU INPUT</span>
+      </div>
+    </header>
+
+    <main class="dashboard rec-dashboard">
+
+      <div class="stack">
+
+        <!-- INPUT -->
+        <section class="panel input-panel">
+          <h2 class="panel-title"><span class="tag">01</span> Data Lubang</h2>
+
+          <div class="depth-input-group">
+            <label for="recCount">Jumlah interval (1 interval = 1 m)</label>
+            <div class="depth-field">
+              <input type="number" id="recCount" inputmode="numeric" value="5" step="1" min="1" max="500">
+              <span class="unit">interval</span>
+            </div>
+          </div>
+
+          <div class="rec-settings">
+            <div class="adv-row">
+              <label for="recUnit">Satuan bawaan input</label>
+              <div class="adv-field">
+                <select id="recUnit">
+                  <option value="cm" selected>cm</option>
+                  <option value="m">meter</option>
+                </select>
+              </div>
+            </div>
+            <div class="adv-row">
+              <label for="recBasis">Pembagi loss</label>
+              <div class="adv-field wide">
+                <select id="recBasis">
+                  <option value="core" selected>Core aktual</option>
+                  <option value="interval">Interval</option>
+                </select>
+              </div>
+            </div>
+            <p class="adv-note">Ketik angka sesuai satuan bawaan, mis. <b>85</b>. Untuk satuan lain tambahkan huruf, mis. <b>1,25m</b> atau <b>85cm</b>.</p>
+          </div>
+
+          <button id="recApplyBtn" class="calc-btn"><span>ATUR JUMLAH INTERVAL</span></button>
+          <button id="recFillBtn" type="button" class="btn-secondary">Isi yang kosong dengan penuh (1 m)</button>
+          <button id="recClearBtn" type="button" class="btn-secondary">Kosongkan semua input sampel</button>
+
+          <div class="error-box" id="recErrorBox" hidden></div>
+        </section>
+
+        <!-- HASIL -->
+        <section class="panel readout-panel">
+          <h2 class="panel-title"><span class="tag">02</span> Ringkasan Lubang</h2>
+
+          <div class="readout-grid">
+            <div class="readout-card highlight">
+              <p class="readout-label">Rec. Rata-rata</p>
+              <p class="readout-value" id="recOutRecovery">—</p>
+              <p class="readout-unit" id="recOutRecoverySub">belum ada data</p>
+            </div>
+            <div class="readout-card">
+              <p class="readout-label">Total Loss</p>
+              <p class="readout-value" id="recOutLossTotal">—</p>
+              <p class="readout-unit">meter</p>
+            </div>
+          </div>
+
+          <div class="breakdown">
+            <div class="breakdown-row">
+              <span class="dot dot-cb"></span>
+              <span class="bd-label">Kedalaman total</span>
+              <span class="bd-value" id="recOutDepth">—</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="dot dot-cb"></span>
+              <span class="bd-label">Interval terisi</span>
+              <span class="bd-value" id="recOutFilled">—</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="dot dot-ok"></span>
+              <span class="bd-label">Penuh (tepat)</span>
+              <span class="bd-value" id="recOutFull">—</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="dot dot-a"></span>
+              <span class="bd-label">Swelling</span>
+              <span class="bd-value" id="recOutSwell">—</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="dot dot-b"></span>
+              <span class="bd-label">Core loss</span>
+              <span class="bd-value" id="recOutLossCount">—</span>
+            </div>
+            <div class="breakdown-row total-row">
+              <span class="bd-label">Total core aktual</span>
+              <span class="bd-value" id="recOutCore">—</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="bd-label">Rec. terendah</span>
+              <span class="bd-value" id="recOutLowest">—</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- TABEL -->
+      <section class="panel table-panel">
+        <h2 class="panel-title"><span class="tag">03</span> Sampel Aktual Per Meteran</h2>
+        <div class="table-wrap rec-table-wrap">
+          <table id="recTable">
+            <thead>
+              <tr>
+                <th>Meteran</th>
+                <th>Sampel aktual</th>
+                <th>Terbaca</th>
+                <th>Recovery</th>
+                <th>Status</th>
+                <th class="act-col">Interval</th>
+              </tr>
+            </thead>
+            <tbody id="recBody"></tbody>
+          </table>
+        </div>
+        <div class="rec-actions">
+          <button id="recAddBtn" type="button" class="btn-secondary">+ Tambah interval</button>
+          <button id="recRemoveBtn" type="button" class="btn-secondary">− Kurangi interval</button>
+          <button id="recUndoBtn" type="button" class="btn-secondary" disabled>↶ Urungkan hapus</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ILUSTRASI -->
+    <section class="panel ill-panel">
+      <h2 class="panel-title"><span class="tag">04</span> Ilustrasi Sampel Per Interval</h2>
+
+      <div class="ill-legend" aria-hidden="true">
+        <span class="ill-chip"><i class="sw sw-ok"></i>Sampel (pas)</span>
+        <span class="ill-chip"><i class="sw sw-loss"></i>Sampel (ada loss)</span>
+        <span class="ill-chip"><i class="sw sw-gap"></i>Core loss (hilang)</span>
+        <span class="ill-chip"><i class="sw sw-swell"></i>Swelling (kelebihan)</span>
+        <span class="ill-chip"><i class="sw sw-mark"></i>Batas 1 m</span>
+      </div>
+
+      <div class="ill-scroll">
+        <div class="ill-ruler" id="recRuler"></div>
+        <div class="ill-lanes" id="recIllustration"></div>
+      </div>
+
+      <p class="ill-note">Satu lajur = satu interval (1 m). Panjang batang digambar sesuai skala dari panjang sampel yang diisi; bagian berarsir menunjukkan core yang hilang, bagian kuning di luar garis 1 m menunjukkan kelebihan akibat swelling. Skala melebar otomatis bila ada swelling yang panjang.</p>
+    </section>
+
+    <!-- RUMUS -->
+    <section class="panel formula-panel">
+      <h2 class="panel-title"><span class="tag">REF</span> Rumus yang Digunakan</h2>
+      <div class="formula-grid">
+        <div class="formula-card">
+          <p class="formula-caption">Sampel pas atau swelling (≥ 1 m)</p>
+          <p class="formula-eq">Rec = 100%</p>
+        </div>
+        <div class="formula-card">
+          <p class="formula-caption">Ada core loss (sampel &lt; 1 m)</p>
+          <p class="formula-eq">Rec = 100% − (Loss ÷ Pembagi × 100%)</p>
+        </div>
+        <div class="formula-card">
+          <p class="formula-caption">Rec. rata-rata lubang</p>
+          <p class="formula-eq">Rata-rata = Σ Rec tiap interval ÷ jumlah interval</p>
+        </div>
+      </div>
+      <p class="formula-footnote">Loss = 1 m − panjang sampel aktual. Pembagi dapat dipilih: core aktual (panjang sampel yang terambil) atau interval (1 m). Rec tidak diizinkan di bawah 0%. Swelling hanya dihitung 100% dan tidak menutupi loss di interval lain. Jumlah interval bebas diubah: tombol “+” di tiap baris menyisipkan interval di bawahnya, “×” menghapusnya (nomor meter interval sesudahnya otomatis bergeser), dan “Urungkan hapus” mengembalikan interval yang terhapus. Hanya interval yang sudah terisi yang masuk ke ringkasan.</p>
+    </section>
+
+    <footer class="panel-footer">
+      <span>STICK-UP GAUGE · RECOVERY SAMPLE</span>
+      <span>Kolom “Terbaca” menampilkan nilai yang dipahami aplikasi, cek bila satuan meragukan</span>
+    </footer>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+<script src="recovery.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
